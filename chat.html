@@ -1,0 +1,80 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Not a Quassel Web App</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="Not a Quassel Web App">
+  <meta name="author" content="Johannes Siipola and Alex Nordlund">
+
+  <link rel="shortcut icon" href="favicon.ico"/>
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <div id="container">
+        <div id="header">Not a Quassel Web App</div>
+        <div id="buffer-pane" class="animation">
+            <div class="network"><span class="expanded"></span><span class="network-name">xd.cm</span></div>
+            <div class="network-channels clearfix" id="xdcm-chats">
+                <div class="channel active"><span class="channel-icon"></span><span class="channel-name">deepy@im.xd.cm</span></div>
+                <div class="channel"><span class="channel-icon"></span><span class="channel-name">foo@im.xd.cm</span></div>
+            </div>
+            <div class="network"><span class="expanded"></span><span class="network-name">jurgen.kz</span></div>
+            <div class="network-channels clearfix" id="jurgenkz-chats">
+                <div class="channel"><span class="channel-icon"></span><span class="channel-name">somechat</span></div>
+                <div class="channel"><span class="channel-icon"></span><span class="channel-name">otherperson</span></div>
+
+            </div>
+            <div class="buffer-bottom-bar"><a id="hide-buffers" ></a><a style="display:none" id="show-buffers" ></a></div>
+        </div>
+        <div id="center" class="animation">
+            <div id="topic">Insert topic here.</div>
+            <div id="backlog-container">
+            <ul class="backlog">
+            <li class='irc-message'><span class='timestamp'> 13:32:24</span><span class='nick'>deepy</span><span class='message'>this is still very much beta.</span></li>
+            </ul>
+            </div>
+            <div class="input"><form><input type="text" placeholder="Enter your message here"></form></div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modal-join-channel" tabindex="-1" role="dialog" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Join channel a on <span id="join-network-name">{network name}</span></h4>
+            </div>
+            <div class="modal-body">
+                <form >
+                  <div class="form-group">
+                    <input type="text" class="form-control" id="modal-join-channel-name" placeholder="Enter channel name">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary">Join channel</button>
+        </div>
+    </div>
+</div>
+</div>
+
+</div>
+<script src="js/jquery-1.11.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/script.js"></script>
+<script type='text/javascript'
+        src='strophe.js'></script>
+<script type='text/javascript'
+        src='chattey.js'></script>
+
+</body>
+</html>
