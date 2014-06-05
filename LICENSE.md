@@ -1,4 +1,4 @@
-chat.html>
+joppuyo/qwebclient>
 Copyright (c) 2014, Johannes Siipola
 All rights reserved.
 
