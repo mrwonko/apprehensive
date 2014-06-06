@@ -37,8 +37,8 @@
         <div id="center" class="animation">
             <div id="topic">Insert topic here.</div>
             <div id="backlog-container">
-            <ul class="backlog">
-            <li class='irc-message'><span class='timestamp'> 13:32:24</span><span class='nick'>deepy</span><span class='message'>this is still very much beta.</span></li>
+            <ul ng-repeat="chat in chats track by $index" ng-show="currentChat == chat" class="backlog">
+            <li ng-repeat="message in chat.messages track by $index" class='irc-message'><span class='timestamp'> {{ message[0] }}</span><span class='nick'>{{ message[1] }}</span><span class='message'>{{ message[2] }}</span></li>
             </ul>
             </div>
             <div class="input"><form ng-submit="inputmessage(chat.name)"><input type="text" ng-model="chat.input" placeholder="Enter your message here"></form></div>
