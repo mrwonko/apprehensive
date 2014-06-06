@@ -1,13 +1,13 @@
 
 <!doctype html>
-<html lang="en">
+<html lang="en" ng-app="agentChat">
 <head>
   <meta charset="utf-8">
 
-  <title>Not a Quassel Web App</title>
+  <title>Apprehensive</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="description" content="Not a Quassel Web App">
-  <meta name="author" content="Johannes Siipola and Alex Nordlund">
+  <meta name="description" content="Apprehensive">
+  <meta name="author" content="deepy/apprehensive">
 
   <link rel="shortcut icon" href="favicon.ico"/>
   <link rel="stylesheet" href="css/bootstrap.css">
@@ -19,12 +19,12 @@
 <body ng-controller="ChatCtrl"> 
 
     <div id="container">
-        <div id="header">Not a Quassel Web App</div>
+        <div id="header">Apprehensive</div>
         <div id="buffer-pane" class="animation">
             <div class="network"><span class="expanded"></span><span class="network-name">xd.cm</span></div>
             <div class="network-channels clearfix" id="xdcm-chats">
                 <div class="channel active"><span class="channel-icon"></span><span class="channel-name">deepy@im.xd.cm</span></div>
-                <div class="channel"><span class="channel-icon"></span><span class="channel-name">foo@im.xd.cm</span></div>
+                <div class="channel" ng-repeat="chat in chats" ng-click="showChat(chat); chat.updated = false" ng-class="{updated: chat.updated, selected: currentChat == chat}"><span class="channel-icon"></span><span class="channel-name">{{ chat.name }}</span></div>
             </div>
             <div class="network"><span class="expanded"></span><span class="network-name">jurgen.kz</span></div>
             <div class="network-channels clearfix" id="jurgenkz-chats">
@@ -41,7 +41,7 @@
             <li class='irc-message'><span class='timestamp'> 13:32:24</span><span class='nick'>deepy</span><span class='message'>this is still very much beta.</span></li>
             </ul>
             </div>
-            <div class="input"><form><input type="text" placeholder="Enter your message here"></form></div>
+            <div class="input"><form ng-submit="inputmessage(chat.name)"><input type="text" ng-model="chat.input" placeholder="Enter your message here"></form></div>
         </div>
 
         <!-- Modal -->
