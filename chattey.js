@@ -8,36 +8,36 @@ function log(msg)
 
 function chatMessage(user,msg) 
 {
-time = new Date();
-$('.backlog').append("<li class='irc-message'><span class='timestamp'> "+time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds()+"</span><span class='nick'>"+ user +"</span><span class='message'>"+ msg +"</span></li>");
+    var time = new Date();
+    $('.backlog').append("<li class='irc-message'><span class='timestamp'> "+time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds()+"</span><span class='nick'>"+ user +"</span><span class='message'>"+ msg +"</span></li>");
 }
 
 function onConnect(status)
 {
     if (status == Strophe.Status.CONNECTING) {
-	log('Strophe is connecting.');
+        log('Strophe is connecting.');
     } else if (status == Strophe.Status.CONNFAIL) {
-	log('Strophe failed to connect.');
-	$('#connect').get(0).value = 'connect';
+        log('Strophe failed to connect.');
+        $('#connect').get(0).value = 'connect';
     } else if (status == Strophe.Status.DISCONNECTING) {
-	log('Strophe is disconnecting.');
+        log('Strophe is disconnecting.');
     } else if (status == Strophe.Status.DISCONNECTED) {
-	log('Strophe is disconnected.');
-	$('#connect').get(0).value = 'connect';
+        log('Strophe is disconnected.');
+        $('#connect').get(0).value = 'connect';
     } else if (status == Strophe.Status.CONNECTED) {
-	log('Strophe is connected.');
-	log('ECHOBOT: Send a message to ' + connection.jid + 
-	    ' to talk to me.');
+        log('Strophe is connected.');
+        log('ECHOBOT: Send a message to ' + connection.jid + 
+            ' to talk to me.');
 
-	connection.addHandler(onMessage, null, 'message', null, null,  null); 
-	connection.send($pres().tree());
+        connection.addHandler(onMessage, null, 'message', null, null,  null); 
+        connection.send($pres().tree());
         //connection.send($msg({to: 'deepy@im.xd.cm', type: 'chat'}).c("body").t('some data'));
     }
 }
 function sendMessage(to, msg) {
-var message = $msg({to: to, type: 'chat'}).c("body").t(msg);
-connection.send(message.tree());
-chatMessage("you", msg);
+    var message = $msg({to: to, type: 'chat'}).c("body").t(msg);
+    connection.send(message.tree());
+    chatMessage("you", msg);
 }
 
 function onMessage(msg) {
@@ -47,14 +47,14 @@ function onMessage(msg) {
     var elems = msg.getElementsByTagName('body');
 
     if (type == "chat" && elems.length > 0) {
-	var body = elems[0];
+        var body = elems[0];
         chatMessage(from.split('/')[0], Strophe.getText(body));
-	log('ECHOBOT: I got a message from ' + from + ': ' + 
-	    Strophe.getText(body));
+        log('ECHOBOT: I got a message from ' + from + ': ' + 
+            Strophe.getText(body));
     
-	//var reply = $msg({to: from, from: to, type: 'chat'})
+        //var reply = $msg({to: from, from: to, type: 'chat'})
         //    .cnode(Strophe.copyElement(body));
-	//connection.send(reply.tree());
+        //connection.send(reply.tree());
     }
 
     // we must return true to keep the handler alive.  
@@ -80,16 +80,16 @@ $(document).ready(function () {
         return false;
     });
     $('#connect').bind('click', function () {
-	var button = $('#connect').get(0);
-	if (button.value == 'connect') {
-	    button.value = 'disconnect';
+        var button = $('#connect').get(0);
+        if (button.value == 'connect') {
+            button.value = 'disconnect';
 
-	    connection.connect($('#jid').get(0).value,
-			       $('#pass').get(0).value,
-			       onConnect);
-	} else {
-	    button.value = 'connect';
-	    connection.disconnect();
-	}
+            connection.connect($('#jid').get(0).value,
+                               $('#pass').get(0).value,
+                               onConnect);
+        } else {
+            button.value = 'connect';
+            connection.disconnect();
+        }
     });
 });

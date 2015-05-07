@@ -1,134 +1,173 @@
-var BOSH_SERVICE = '/http-bind';
-var connection = null;
+"use strict";
 
-function log(msg) {
-	console.log(document.createTextNode(msg));
-}
-
-function chatMessage(user,msg) {
-	angular.element(document.querySelector(".wrapper")).scope().log(msg, user, user)
-}
-
-function onConnect(status) {
-	if (status == Strophe.Status.CONNECTING) {
-		angular.element(document.querySelector(".wrapper")).scope().log("Connecting to chat server...", "System", "System")
-		log('Strophe is connecting.');
-	} else if (status == Strophe.Status.CONNFAIL) {
-		angular.element(document.querySelector(".wrapper")).scope().log("Failed to connect to chat server", "System", "System")
-		log('Strophe failed to connect.');
-	} else if (status == Strophe.Status.DISCONNECTING) {
-		angular.element(document.querySelector(".wrapper")).scope().log("Disconnecting from chat server...", "System", "System")
-		log('Strophe is disconnecting.');
-	} else if (status == Strophe.Status.DISCONNECTED) {
-		angular.element(document.querySelector(".wrapper")).scope().log("Disconnected", "System", "System")
-		log('Strophe is disconnected.');
-	} else if (status == Strophe.Status.CONNECTED) {
-		angular.element(document.querySelector(".wrapper")).scope().log("Connected", "System", "System")
-		log('Strophe is connected.');
-		log('ECHOBOT: Send a message to ' + connection.jid + ' to talk to me.');
-		connection.addHandler(onMessage, null, 'message', null, null, null);
-		connection.send($pres().tree());
-	}
-}
-
-function sendMessage(to, msg) {
-	var message = $msg({to: to, type: 'chat'}).c("body").t(msg);
-	connection.send(message.tree());
-}
-
-function onMessage(msg) {
-	var to = msg.getAttribute('to');
-	var from = msg.getAttribute('from');
-	var type = msg.getAttribute('type');
-	var elems = msg.getElementsByTagName('body');
-	if (type == "chat" && elems.length > 0) {
-		var body = elems[0];
-		chatMessage(from.split('/')[0], Strophe.getText(body));
-		log('ECHOBOT: I got a message from ' + from + ': ' + Strophe.getText(body));
-	}
-	// we must return true to keep the handler alive.
-	// returning false would remove it after it finishes.
-	return true;
-}
-var agentChat = angular.module('agentChat', ['luegg.directives']);
-
-agentChat.controller("ChatCtrl", [ "$scope", function($scope) {
-
-	$scope.showChat = function(chat) {
-		$scope.currentChat = chat;
-	}
-	initDate = new Date();
-	$scope.chats = [
-		{"name": "System",
-		"topic": "System",
-		"input": "",
-		"updated": "false",
-		"glued": "true",
-		"messages": [[ ('0' + initDate.getHours()).slice(-2) + ':' + ('0' + initDate.getMinutes()).slice(-2) + ':' + ('0' + initDate.getSeconds()).slice(-2), "System", "Welcome to ..You what?!" ]]},
-		{"name": "Sture",
-		"topic": "AAAAAH",
-		"input": "",
-		"updated": "true",
-		"messages": [ [ "example timestamp", "example nickname", "example message" ] ]},
-		{"name": "Lure",
-		"topic": "Eh",
-		"input": "",
-		"messages": [ [ "example timestamp", "example nickname", "example message" ] ]}
-	];
-	$scope.currentChat = $scope.chats[0];
-	$scope.lookup = {};
-	$scope.updateLookup = function() {
-		for (var i = 0, len = $scope.chats.length; i < len; i++) {
-			$scope.lookup[$scope.chats[i].name] = $scope.chats[i];
-		}
-	}
-	$scope.updateLookup();
-	$scope.log = function(msg, nick, window) {
-		d = new Date();
-		if ($scope.lookup[window]) {
-			$scope.lookup[window].messages.push([ ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) + ':' + ('0' + d.getSeconds()).slice(-2), nick, msg ]);
-			$scope.lookup[window].updated = "true";
-		} else {
-			$scope.chats.push({ "name": window, "topic": "Not implemented", "input": "", "updated": "true", "glued": "true",
-				"messages": [ [ ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) + 
-				':' + ('0' + d.getSeconds()).slice(-2), nick, msg ] ] });
-			$scope.updateLookup();
-		}
-		try {
-			$scope.$apply();
-		} catch(err) {
-			//suppress
-		}
-	}
-	$scope.inputmessage = function(window) {
-		if ($scope.lookup[window].input) {
-			$scope.log($scope.lookup[window].input, "You", window);
-			sendMessage('deepy@im.xd.cm', $scope.lookup[window].input);
-			$scope.lookup[window].input = '';
-		}
-	}
-	
-	connection = new Strophe.Connection(BOSH_SERVICE);
-	// Uncomment the following lines to spy on the wire traffic.
-	//connection.rawInput = function (data) { log('RECV: ' + data); };
-	//connection.rawOutput = function (data) { log('SEND: ' + data); };
-	// Uncomment the following line to see all the debug output.
-	//Strophe.log = function (level, msg) { log('LOG: ' + msg); };
-	connection.connect(Math.random().toString(36).substr(2, 5)+"@pub.xd.cm", "", onConnect);
-
-
-}]);
-	agentChat.directive('resizable', function($window) {
-		return function($scope) {
-			$scope.initializeWindowSize = function() {
-			$scope.windowHeight = $window.innerHeight;
-			$scope.heightCSS = { "height": $window.innerHeight - 185 + "px"};
-			return $scope.windowWidth = $window.innerWidth;
-		};
-		$scope.initializeWindowSize();
-		return angular.element($window).bind('resize', function() {
-			$scope.initializeWindowSize();
-			return $scope.$apply();
-		});
-		};
-	});
+angular.module( "apprChat", [ "apprChatConfig", "strophe", "lodash", "ngSanitize" ] )
+.filter( 'count', function( $window, _ ) {
+    return function( input ) {
+        return _.size( input );
+    };
+} )
+.factory( "apprOnStropheError", function( $log, strophe ) {
+    return function( scope, url ) {
+        return ;
+    };
+} )
+.factory( "apprStropheHandler", function( $log, strophe ) {
+    return function( scope, url ) {
+        // common BOSH callbacks of Admin and User chat
+        return {
+            "onDisconnected": function() {
+                $log.info( "Disconnected from " + url );
+                scope.status = "disconnected";
+                scope.sendMessage = null;
+            },
+            "onError": function( error ) {
+                if( error.error == strophe.error.ERROR ) {
+                    $log.error( "strophe error: " + error.reason );
+                    scope.error = "Strophe error " + error.reason + "!";
+                } else if( error.error == strophe.error.CONNFAIL ) {
+                    $log.error( "Could not connect to " + url + ": " + error.reason );
+                    scope.error = "Could not connect!";
+                } else if( error.error == strophe.error.AUTHFAIL ) {
+                    $log.error( "Auth rejected: " + error.reason );
+                    scope.error = "Auth rejected!";
+                } else {
+                    $log.error( "Unknown error: %o", error );
+                    scope.error = "Unknown error!";
+                }
+                scope.status = "error";
+            }
+        };
+    };
+} )
+.directive( "apprChat", function() {
+    return {
+        scope: {
+            "sendMessage": "=",
+            "messages": "="
+        },
+        templateUrl: "templates/chat.html",
+        restrict: 'E'
+    };
+} )
+.directive( "apprAdminChat", function() {
+    return {
+        "scope": {},
+        "restrict": 'E', // element directive (i.e. a new tag)
+        "templateUrl": 'templates/adminchat.html',
+        "controller": function( $scope, apprJabberConfig, strophe, $log, $window, apprStropheHandler, _ ) {
+            var config = apprJabberConfig;
+            
+            $scope.status = "connecting";
+            $scope.tabs = [];
+            $scope.messagesByUser = {};
+            $scope.updated = {};
+            $scope.network = config.name;
+            $scope.currentTab = null;
+            $scope.changeTab = function( tab ) {
+                 $scope.currentTab = tab;
+                 tab.updated = false;
+            };
+            $scope.closeTab = function( tab ) {
+                $scope.tabs.splice( $scope.tabs.indexOf( tab ), 1 );
+                // closed the current tab?
+                if( $scope.currentTab == tab ) {
+                    $scope.currentTab = $scope.tabs == 0 ? null : $scope.tabs[ 0 ];
+                }
+            };
+            
+            // BOSH callbacks
+            function onNotification( notification ) {
+                if( notification.event == strophe.event.CONNECTED ) {
+                    $log.info( "Admin connected to " + config.url );
+                    $scope.status = "connected";
+                    //    define SendMessage
+                    var sendMessage = notification.sendMessage;
+                    $scope.sendMessage = function( message ) {
+                        $log.info( "Admin sending message to " + $scope.currentTab.user + ": " + message );
+                        sendMessage( $scope.currentTab.user, message );
+                        message.replace( "<", "&lt;" );
+                        $scope.messagesByUser[ $scope.currentTab.user ].push( {
+                            "from": "you",
+                            "content": message.replace( /</g, "&lt;").replace( />/g, "&gt;" ),
+                            "date": new $window.Date()
+                        } );
+                    };
+                } else if( notification.event == strophe.event.DISCONNECTING ) {
+                    $log.info( "Admin disconnecting from " + config.url );
+                    $scope.sendMessage = null;
+                    $scope.status = "disconnecting";
+                }
+                //    New Message
+                else if( notification.event == strophe.event.MESSAGE ) {
+                    var message = notification.message,
+                        from = message.from;
+                    // create message list for this user, if necessary
+                    if( !$scope.messagesByUser.hasOwnProperty( from  ) ) {
+                        $scope.messagesByUser[ from ] = [];
+                    }
+                    var tab = _.find( $scope.tabs, { "user": from } );
+                    // open tab for this user, if necessary
+                    if( _.isUndefined( tab ) ) {
+                        tab = { "user": from, "updated": false };
+                        $scope.tabs.push( tab );
+                        // if this is the first tab, make it the current one
+                        if( !$scope.currentTab ) {
+                            $scope.currentTab = tab;
+                        }
+                    }
+                    // mark tab as updated, unless current
+                    if( from != $scope.currentTab.user ) {
+                        tab.updated = true;
+                    }
+                    $scope.messagesByUser[ from ].push( message );
+                }
+            }
+            
+            var stropheHandler = apprStropheHandler( $scope, config.url );
+            strophe.connect( config.url, config.admin.name, config.admin.password )
+                .then( stropheHandler.onDisconnected, stropheHandler.onError, onNotification );
+        }
+    };
+} )
+.directive( "apprUserChat", function() {
+    return {
+        "scope": {},
+        "restrict": 'E', // element directive (i.e. a new tag)
+        "templateUrl": 'templates/userchat.html',
+        "controller": function( $scope, apprJabberConfig, strophe, $log, $window, apprStropheHandler ) {
+            var config = apprJabberConfig;
+            
+            $scope.status = "connecting";
+            $scope.messages = [];
+            
+            // BOSH callbacks
+            function onNotification( notification ) {
+                if( notification.event == strophe.event.CONNECTED ) {
+                    $log.info( "User connected to " + config.url );
+                    $scope.status = "connected";
+                    var sendMessage = notification.sendMessage;
+                    $scope.sendMessage = function( message ) {
+                        $log.info( "User sending message: " + message );
+                        sendMessage( config.admin.name, message );
+                        $scope.messages.push( {
+                            "from": "you",
+                            "content": message.replace( /</g, "&lt;").replace( />/g, "&gt;" ),
+                            "date": new $window.Date()
+                        } );
+                    };
+                } else if( notification.event == strophe.event.DISCONNECTING ) {
+                    $log.info( "Admin disconnecting from " + config.url );
+                    $scope.sendMessage = null;
+                    $scope.status = "disconnecting";
+                } else if( notification.event == strophe.event.MESSAGE ) {
+                    $scope.messages.push( notification.message );
+                }
+            }
+            
+            var stropheHandler = apprStropheHandler( $scope, config.url );
+            strophe.connect( config.url, config.user.name, config.user.password )
+                .then( stropheHandler.onDisconnected, stropheHandler.onError, onNotification );
+        }
+    };
+} )
+;

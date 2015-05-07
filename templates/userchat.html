@@ -1,0 +1,11 @@
+<!-- todo: style properly -->
+<h1>Apprehensive User</h1>
+
+<div ng-if="status != 'connected'">
+    <p>Status: {{ status }}</p>
+    <div class="alert alert-danger" ng-if="status == 'error'">
+        {{ error }}
+    </div>
+</div>
+
+<appr-chat ng-if="status == 'connected'" send-message="sendMessage" messages="messages"></appr-chat>

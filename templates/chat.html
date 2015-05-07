@@ -1,0 +1,12 @@
+<ul class="backlog">
+    <li ng-repeat="message in messages" class="irc-message">
+        <span class='timestamp'> {{ message.date | date:"HH:mm:ss" }}</span>
+        <span class='nick'>{{ message.from }}:</span>
+        <!-- BOSH escapes special chars already; ng-bind would escape those again, leading to &amp;gt; etc., so we use ng-bind-html -->
+        <span class='message' ng-bind-html="message.content"></span>
+    </li>
+</ul>
+
+<form ng-submit="sendMessage( message ); message = '';">
+    <input class="form-control" type="text" ng-model="message" placeholder="Enter your message here"/>
+</form>

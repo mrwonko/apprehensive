@@ -1,0 +1,20 @@
+<!-- todo: style properly -->
+<h1>Apprehensive Admin</h1>
+
+<ul class="nav nav-tabs" ng-if="status == 'connected' && (tabs | count) > 0">
+    <li ng-repeat="tab in tabs" role="presentation" ng-class="{ active: currentTab == tab }">
+        <a href="#" ng-click="changeTab( tab );">
+            <span ng-class="{ 'text-danger': tab.updated }">{{ tab.user }}</span>
+            <button ng-click="closeTab( tab );" class="btn btn-danger">&times;</button>
+        </a>
+    </li>
+</ul>
+
+<div ng-if="status != 'connected'">
+    <p>Status: {{ status }}</p>
+    <div class="alert alert-danger" ng-if="status == 'error'">
+        {{ error }}
+    </div>
+</div>
+
+<appr-chat ng-if="status == 'connected' && currentTab" send-message="sendMessage" messages="messagesByUser[ currentTab.user ]"></appr-chat>
